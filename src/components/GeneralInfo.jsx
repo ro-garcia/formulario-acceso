@@ -40,7 +40,7 @@ onChange={(e)=>setGeneral({...general,fecha:e.target.value})}
 
 
 <div className="form-field">
-<label>No. Facturas</label>
+<label>Facturas (separadas por comas)</label>
 <input
 type="text"
 disabled={!enableInvoices}

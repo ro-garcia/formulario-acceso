@@ -28,13 +28,17 @@ const [people,setPeople] = useState([]);
 const [toolCount,setToolCount] = useState(0);
 const [tools,setTools] = useState([]);
 
-const [vehicle,setVehicle] = useState({
+/* ✅ VEHICULOS COMO ARRAY */
+const [vehicle,setVehicle] = useState([
+{
 placa:"",
 modelo:"",
 color:"",
 marca:"",
-poliza:""
-});
+poliza:"",
+file:null
+}
+]);
 
 const [attachments,setAttachments] = useState({
 tarjeta:false,
@@ -43,6 +47,49 @@ licencia:false,
 facturas:false,
 carne:false
 });
+
+const [lastSubmit,setLastSubmit] = useState(null);
+const [sending,setSending] = useState(false);
+
+
+/* -------------------- RESET FORM -------------------- */
+
+const resetForm = () => {
+
+setGeneral({
+empresa:"",
+motivo:"",
+fecha:"",
+facturas:""
+});
+
+setPersonCount(0);
+setPeople([]);
+
+setToolCount(0);
+setTools([]);
+
+/* ✅ RESET VEHICULOS */
+setVehicle([
+{
+placa:"",
+modelo:"",
+color:"",
+marca:"",
+poliza:"",
+file:null
+}
+]);
+
+setAttachments({
+tarjeta:false,
+poliza:false,
+licencia:false,
+facturas:false,
+carne:false
+});
+
+};
 
 
 /* -------------------- LOGICA -------------------- */
@@ -68,7 +115,7 @@ formType === FORM_TYPES[2] ||
 formType === FORM_TYPES[3];
 
 
-/* -------------------- FUNCIONES PERSONAS -------------------- */
+/* -------------------- PERSONAS -------------------- */
 
 const changePersonCount = (value) => {
 
@@ -100,7 +147,7 @@ setPeople(newPeople);
 };
 
 
-/* -------------------- FUNCIONES HERRAMIENTAS -------------------- */
+/* -------------------- HERRAMIENTAS -------------------- */
 
 const changeToolCount = (value) => {
 
@@ -115,7 +162,8 @@ newTools = newTools.slice(0,n);
 while(newTools.length < n){
 newTools.push({
 descripcion:"",
-cantidad:""
+cantidad:"",
+factura:"" // ✅ NUEVO
 });
 }
 }
@@ -134,6 +182,17 @@ setTools(newTools);
 
 const submitForm = async () => {
 
+if(sending) return;
+
+const now = Date.now();
+
+if(lastSubmit && now - lastSubmit < 60000){
+alert("Solo puedes enviar un formulario por minuto.");
+return;
+}
+
+setSending(true);
+
 const payload = {
 
 tipoFormulario: formType,
@@ -143,11 +202,14 @@ motivoIngreso: general.motivo,
 fechaSolicitudIngreso: general.fecha,
 numeroFacturas: general.facturas,
 
-placas: vehicle.placa,
-colorVehiculo: vehicle.color,
-marcaVehiculo: vehicle.marca,
-modeloVehiculo: vehicle.modelo,
-numeroPoliza: vehicle.poliza,
+/* ✅ MULTI VEHICULOS */
+vehiculos: vehicle.map(v => ({
+placa: v.placa,
+color: v.color,
+marca: v.marca,
+modelo: v.modelo,
+numeroPoliza: v.poliza
+})),
 
 personas: people.map(p => ({
 nombre: p.nombre,
@@ -156,10 +218,12 @@ ocupacion: p.ocupacion,
 numeroCarne: p.carne
 })),
 
+/* ✅ FACTURA INCLUIDA */
 herramientas: tools.map((t,i)=>({
 numeroItem: String(i+1),
 descripcion: t.descripcion,
-cantidad: t.cantidad
+cantidad: t.cantidad,
+numeroFactura: t.factura
 })),
 
 adjuntos: Object.keys(attachments)
@@ -173,62 +237,46 @@ contenido:""
 
 console.log("Payload enviado:",payload);
 
-try {
-
-const response = console.log("Payload enviado:", payload);
-
-try {
+try{
 
 const API_URL = process.env.REACT_APP_POWER_AUTOMATE_URL;
 
-const response = await fetch(API_URL, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify(payload)
+const response = await fetch(API_URL,{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify(payload)
 });
 
-if (!response.ok) {
-  throw new Error("Error en la petición HTTP");
-}
-
-const text = await response.text();
-
-console.log("Respuesta Power Automate:", text);
+if(response.status === 200 || response.status === 202){
 
 alert("Formulario enviado correctamente");
 
-} catch (error) {
+setLastSubmit(now);
 
-console.error("Error enviando formulario:", error);
+resetForm();
 
-alert("Error enviando formulario");
+}else{
 
-};
+throw new Error("Respuesta inesperada");
 
-if(!response.ok){
-throw new Error("Error en la petición HTTP");
 }
-
-const text = await response.text();
-
-console.log("Respuesta Power Automate:",text);
-
-alert("Formulario enviado correctamente");
 
 }catch(error){
 
 console.error("Error enviando formulario:",error);
 
-alert("Error enviando formulario");
+alert("No se pudo confirmar el envío, pero el formulario pudo haberse recibido.");
 
 }
+
+setSending(false);
 
 };
 
 
-/* -------------------- MAPA DE COMPONENTES -------------------- */
+/* -------------------- COMPONENTES -------------------- */
 
 const componentMap = {
 
@@ -257,6 +305,7 @@ updatePerson={updatePerson}
 />
 ),
 
+/* ✅ FIX VEHICLE */
 vehicle: (
 <VehicleForm
 vehicle={vehicle}
@@ -288,7 +337,10 @@ return (
 
 <FormTypeSelector
 formType={formType}
-setFormType={setFormType}
+setFormType={(value)=>{
+resetForm();
+setFormType(value);
+}}
 />
 
 {formConfig[formType]?.map((component)=>(
@@ -301,17 +353,18 @@ setFormType={setFormType}
 
 <button
 onClick={submitForm}
+disabled={sending}
 style={{
 padding:"14px 30px",
 fontSize:"16px",
-background:"#0f172a",
+background:sending ? "#6b7280" : "#0f172a",
 color:"white",
 border:"none",
 borderRadius:"8px",
 cursor:"pointer"
 }}
 >
-Enviar Formulario
+{sending ? "Enviando..." : "Enviar Formulario"}
 </button>
 
 </div>

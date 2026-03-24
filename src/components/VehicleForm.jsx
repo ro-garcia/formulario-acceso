@@ -1,69 +1,141 @@
-export default function VehicleForm({vehicle,setVehicle,enableVehicle}){
+export default function VehicleForm({ vehicle, setVehicle, enableVehicle }) {
 
-return(
+  const maxVehicles = 5;
 
-<div className="section">
+  // cantidad (igual que personas)
+  const count = vehicle.length || 1;
 
-<div className="section-title">
-Datos del Vehículo
-</div>
+  const changeVehicleCount = (value) => {
+    const n = Math.min(parseInt(value) || 0, maxVehicles);
 
-<div className="grid">
+    let newVehicles = [...vehicle];
 
-<div className="form-field">
-<label>Placa</label>
-<input
-type="text"
-disabled={!enableVehicle}
-value={vehicle.placa}
-onChange={(e)=>setVehicle({...vehicle,placa:e.target.value})}
-/>
-</div>
+    if (newVehicles.length > n) {
+      newVehicles = newVehicles.slice(0, n);
+    } else {
+      while (newVehicles.length < n) {
+        newVehicles.push({
+          placa: "",
+          modelo: "",
+          color: "",
+          marca: "",
+          poliza: "",
+          file: null
+        });
+      }
+    }
 
-<div className="form-field">
-<label>Modelo</label>
-<input
-type="text"
-disabled={!enableVehicle}
-value={vehicle.modelo}
-onChange={(e)=>setVehicle({...vehicle,modelo:e.target.value})}
-/>
-</div>
+    setVehicle(newVehicles);
+  };
 
-<div className="form-field">
-<label>Color</label>
-<input
-type="text"
-disabled={!enableVehicle}
-value={vehicle.color}
-onChange={(e)=>setVehicle({...vehicle,color:e.target.value})}
-/>
-</div>
+  const updateVehicle = (index, field, value) => {
+    const updated = [...vehicle];
+    updated[index][field] = value;
+    setVehicle(updated);
+  };
 
-<div className="form-field">
-<label>Marca</label>
-<input
-type="text"
-disabled={!enableVehicle}
-value={vehicle.marca}
-onChange={(e)=>setVehicle({...vehicle,marca:e.target.value})}
-/>
-</div>
+  return (
+    <div className="section">
 
-<div className="form-field">
-<label>No. Póliza</label>
-<input
-type="text"
-disabled={!enableVehicle}
-value={vehicle.poliza}
-onChange={(e)=>setVehicle({...vehicle,poliza:e.target.value})}
-/>
-</div>
+      <div className="section-title">
+        Datos del Vehículo
+      </div>
 
-</div>
+      {/* 🔢 selector cantidad */}
+      <div className="form-field" style={{ marginBottom: "15px" }}>
+        <label>Cantidad de vehículos (máx 5)</label>
+        <input
+          type="number"
+          min="1"
+          max="5"
+          disabled={!enableVehicle}
+          value={count}
+          onChange={(e) => changeVehicleCount(e.target.value)}
+        />
+      </div>
 
-</div>
+      {/* 📋 tabla */}
+      <div style={{ overflowX: "auto" }}>
+        <table className="table" style={{ width: "100%", borderCollapse: "collapse" }}>
 
-)
+          <thead>
+            <tr style={{ background: "#f1f5f9" }}>
+              <th>#</th>
+              <th>Placa</th>
+              <th>Modelo</th>
+              <th>Color</th>
+              <th>Marca</th>
+              <th>No. Póliza</th>
+              <th>Adjunto</th>
+            </tr>
+          </thead>
 
+          <tbody>
+            {vehicle.map((v, index) => (
+              <tr key={index} style={{ borderBottom: "1px solid #e5e7eb" }}>
+
+                <td>{index + 1}</td>
+
+                <td>
+                  <input
+                    type="text"
+                    disabled={!enableVehicle}
+                    value={v.placa}
+                    onChange={(e) => updateVehicle(index, "placa", e.target.value)}
+                  />
+                </td>
+
+                <td>
+                  <input
+                    type="text"
+                    disabled={!enableVehicle}
+                    value={v.modelo}
+                    onChange={(e) => updateVehicle(index, "modelo", e.target.value)}
+                  />
+                </td>
+
+                <td>
+                  <input
+                    type="text"
+                    disabled={!enableVehicle}
+                    value={v.color}
+                    onChange={(e) => updateVehicle(index, "color", e.target.value)}
+                  />
+                </td>
+
+                <td>
+                  <input
+                    type="text"
+                    disabled={!enableVehicle}
+                    value={v.marca}
+                    onChange={(e) => updateVehicle(index, "marca", e.target.value)}
+                  />
+                </td>
+
+                <td>
+                  <input
+                    type="text"
+                    disabled={!enableVehicle}
+                    value={v.poliza}
+                    onChange={(e) => updateVehicle(index, "poliza", e.target.value)}
+                  />
+                </td>
+
+                <td>
+                  <input
+                    type="file"
+                    disabled={!enableVehicle}
+                    onChange={(e) => updateVehicle(index, "file", e.target.files[0])}
+                  />
+                </td>
+
+              </tr>
+            ))}
+          </tbody>
+
+        </table>
+      </div>
+
+    </div>
+  );
 }

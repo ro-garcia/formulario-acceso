@@ -22,12 +22,14 @@ export const formConfig = {
     "tools"
   ],
 
+  /* 🔥 AQUI AGREGAMOS MATERIALS */
   [FORM_TYPES[3]]: [
     "general",
     "attachments",
     "people",
     "vehicle",
-    "tools"
+    "tools",
+    "materials" // ✅ NUEVO
   ],
 
   [FORM_TYPES[4]]: [
@@ -36,10 +38,12 @@ export const formConfig = {
     "vehicle"
   ],
 
+  /* 🔥 SOLO MATERIALES */
   [FORM_TYPES[5]]: [
     "general",
     "people",
-    "vehicle"
+    "vehicle",
+    "materials" // ✅ NUEVO
   ]
 
 };

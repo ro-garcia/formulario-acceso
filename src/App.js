@@ -5,6 +5,7 @@ import FormTypeSelector from "./components/FormTypeSelector";
 import GeneralInfo from "./components/GeneralInfo";
 import PeopleTable from "./components/PeopleTable";
 import ToolsTable from "./components/ToolsTable";
+import MaterialsTable from "./components/Materials";
 import VehicleForm from "./components/VehicleForm";
 import Attachments from "./components/Attachments";
 
@@ -27,6 +28,10 @@ const [people,setPeople] = useState([]);
 
 const [toolCount,setToolCount] = useState(0);
 const [tools,setTools] = useState([]);
+
+/* ✅ NUEVO: MATERIALES */
+const [materialCount,setMaterialCount] = useState(0);
+const [materials,setMaterials] = useState([]);
 
 /* ✅ VEHICULOS COMO ARRAY */
 const [vehicle,setVehicle] = useState([
@@ -69,6 +74,10 @@ setPeople([]);
 setToolCount(0);
 setTools([]);
 
+/* ✅ RESET MATERIALES */
+setMaterialCount(0);
+setMaterials([]);
+
 /* ✅ RESET VEHICULOS */
 setVehicle([
 {
@@ -98,11 +107,16 @@ const enableVehicle =
 formType === FORM_TYPES[1] ||
 formType === FORM_TYPES[2] ||
 formType === FORM_TYPES[3] ||
-formType === FORM_TYPES[4];
+formType === FORM_TYPES[4] ||
+formType === FORM_TYPES[5];
 
 const enableTools =
 formType === FORM_TYPES[2] ||
-formType === FORM_TYPES[3];
+formType === FORM_TYPES[3] ||
+formType === FORM_TYPES[5];
+
+/* ✅ MATERIALES USA MISMA LOGICA QUE TOOLS */
+const enableMaterials = enableTools;
 
 const enableInvoices =
 formType === FORM_TYPES[3] ||
@@ -163,7 +177,7 @@ while(newTools.length < n){
 newTools.push({
 descripcion:"",
 cantidad:"",
-factura:"" // ✅ NUEVO
+factura:""
 });
 }
 }
@@ -175,6 +189,37 @@ const updateTool = (index,field,value) => {
 const newTools = [...tools];
 newTools[index][field] = value;
 setTools(newTools);
+};
+
+
+/* -------------------- MATERIALES -------------------- */
+
+const changeMaterialCount = (value) => {
+
+const n = parseInt(value);
+setMaterialCount(n);
+
+let newMaterials = [...materials];
+
+if(newMaterials.length > n){
+newMaterials = newMaterials.slice(0,n);
+}else{
+while(newMaterials.length < n){
+newMaterials.push({
+descripcion:"",
+cantidad:"",
+factura:""
+});
+}
+}
+
+setMaterials(newMaterials);
+};
+
+const updateMaterial = (index,field,value) => {
+const newMaterials = [...materials];
+newMaterials[index][field] = value;
+setMaterials(newMaterials);
 };
 
 
@@ -202,7 +247,6 @@ motivoIngreso: general.motivo,
 fechaSolicitudIngreso: general.fecha,
 numeroFacturas: general.facturas,
 
-/* ✅ MULTI VEHICULOS */
 vehiculos: vehicle.map(v => ({
 placa: v.placa,
 color: v.color,
@@ -218,12 +262,19 @@ ocupacion: p.ocupacion,
 numeroCarne: p.carne
 })),
 
-/* ✅ FACTURA INCLUIDA */
 herramientas: tools.map((t,i)=>({
 numeroItem: String(i+1),
 descripcion: t.descripcion,
 cantidad: t.cantidad,
 numeroFactura: t.factura
+})),
+
+/* ✅ NUEVO */
+materiales: materials.map((m,i)=>({
+numeroItem: String(i+1),
+descripcion: m.descripcion,
+cantidad: m.cantidad,
+numeroFactura: m.factura
 })),
 
 adjuntos: Object.keys(attachments)
@@ -305,7 +356,6 @@ updatePerson={updatePerson}
 />
 ),
 
-/* ✅ FIX VEHICLE */
 vehicle: (
 <VehicleForm
 vehicle={vehicle}
@@ -321,6 +371,17 @@ toolCount={toolCount}
 changeToolCount={changeToolCount}
 updateTool={updateTool}
 enableTools={enableTools}
+/>
+),
+
+/* ✅ NUEVO */
+materials: (
+<MaterialsTable
+materials={materials}
+materialCount={materialCount}
+changeMaterialCount={changeMaterialCount}
+updateMaterial={updateMaterial}
+enableMaterials={enableMaterials}
 />
 )
 

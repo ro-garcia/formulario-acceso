@@ -1,11 +1,11 @@
 "use client";
 
-export default function ToolsTable({
-  tools,
-  toolCount,
-  changeToolCount,
-  updateTool,
-  enableTools
+export default function MaterialsTable({
+  materials,
+  materialCount,
+  changeMaterialCount,
+  updateMaterial,
+  enableMaterials
 }) {
 
   return (
@@ -13,15 +13,15 @@ export default function ToolsTable({
     <div className="section">
 
       <div className="section-title">
-        Ingreso de Herramientas
+        Ingreso de Materiales
       </div>
 
       {/* SELECT CANTIDAD */}
       <select
         className="tool-count"
-        disabled={!enableTools}
-        value={toolCount}
-        onChange={(e) => changeToolCount(e.target.value)}
+        disabled={!enableMaterials}
+        value={materialCount}
+        onChange={(e) => changeMaterialCount(e.target.value)}
       >
 
         <option value={0}>Cantidad</option>
@@ -50,7 +50,7 @@ export default function ToolsTable({
 
           <tbody>
 
-            {tools.map((t, i) => (
+            {materials.map((m, i) => (
 
               <tr key={i}>
 
@@ -60,10 +60,10 @@ export default function ToolsTable({
                 {/* DESCRIPCION */}
                 <td className="col-desc">
                   <input
-                    disabled={!enableTools}
-                    value={t.descripcion}
+                    disabled={!enableMaterials}
+                    value={m.descripcion}
                     onChange={(e) =>
-                      updateTool(i, "descripcion", e.target.value)
+                      updateMaterial(i, "descripcion", e.target.value)
                     }
                     placeholder="Descripción"
                   />
@@ -74,10 +74,10 @@ export default function ToolsTable({
                   <input
                     type="number"
                     min="0"
-                    disabled={!enableTools}
-                    value={t.cantidad}
+                    disabled={!enableMaterials}
+                    value={m.cantidad}
                     onChange={(e) =>
-                      updateTool(i, "cantidad", e.target.value)
+                      updateMaterial(i, "cantidad", e.target.value)
                     }
                     placeholder="0"
                   />
@@ -86,10 +86,10 @@ export default function ToolsTable({
                 {/* FACTURA */}
                 <td className="col-factura">
                   <input
-                    disabled={!enableTools}
-                    value={t.factura || ""}
+                    disabled={!enableMaterials}
+                    value={m.factura || ""}
                     onChange={(e) =>
-                      updateTool(i, "factura", e.target.value)
+                      updateMaterial(i, "factura", e.target.value)
                     }
                     placeholder="No. factura"
                   />

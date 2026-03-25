@@ -45,7 +45,7 @@ onChange={(e)=>changePersonCount(e.target.value)}
 <th>Nombre</th>
 <th>DPI / Licencia</th>
 <th>Ocupación</th>
-<th>Carné</th>
+<th>Carné (Si aplica)</th>
 </tr>
 
 </thead>

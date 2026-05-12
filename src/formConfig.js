@@ -34,6 +34,7 @@ export const formConfig = {
 
   [FORM_TYPES[4]]: [
     "general",
+    "attachments",
     "people",
     "vehicle"
   ],
@@ -41,6 +42,7 @@ export const formConfig = {
   /* 🔥 SOLO MATERIALES */
   [FORM_TYPES[5]]: [
     "general",
+    "attachments",
     "people",
     "vehicle",
     "materials" // ✅ NUEVO

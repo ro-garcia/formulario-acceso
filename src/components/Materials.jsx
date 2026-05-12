@@ -1,5 +1,7 @@
 "use client";
 
+const quantityOptions = Array.from({ length: 100 }, (_, i) => i + 1);
+
 export default function MaterialsTable({
   materials,
   materialCount,
@@ -23,8 +25,6 @@ export default function MaterialsTable({
         value={materialCount}
         onChange={(e) => changeMaterialCount(e.target.value)}
       >
-
-        <option value={0}>Cantidad</option>
 
         {[...Array(25)].map((_, i) => (
           <option key={i + 1} value={i + 1}>
@@ -71,16 +71,20 @@ export default function MaterialsTable({
 
                 {/* CANTIDAD */}
                 <td className="col-qty">
-                  <input
-                    type="number"
-                    min="0"
+                  <select
+                    className="quantity-select"
                     disabled={!enableMaterials}
-                    value={m.cantidad}
+                    value={m.cantidad || "1"}
                     onChange={(e) =>
                       updateMaterial(i, "cantidad", e.target.value)
                     }
-                    placeholder="0"
-                  />
+                  >
+                    {quantityOptions.map((qty) => (
+                      <option key={qty} value={qty}>
+                        {qty}
+                      </option>
+                    ))}
+                  </select>
                 </td>
 
                 {/* FACTURA */}

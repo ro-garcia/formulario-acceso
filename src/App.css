@@ -184,7 +184,8 @@ color:#7a7a7a;
 font-weight:500;
 }
 
-.form-field input{
+.form-field input,
+.form-field select{
 padding:12px;
 border:1px solid #cfcfcf;
 border-radius:6px;
@@ -193,7 +194,8 @@ background:#fff;
 transition:0.2s;
 }
 
-.form-field input:focus{
+.form-field input:focus,
+.form-field select:focus{
 outline:none;
 border-color:#4a90e2;
 box-shadow:0 0 0 2px rgba(74,144,226,0.15);
@@ -295,6 +297,10 @@ width:120px;
 margin-bottom:15px;
 }
 
+.count-select{
+width:140px;
+}
+
 
 /* LAYOUT ESPECIFICO PARA HERRAMIENTAS */
 
@@ -318,9 +324,15 @@ width:100%;
 min-width:300px;
 }
 
-.tools-layout .col-qty input{
-width:90px;
+.tools-layout .col-qty input,
+.tools-layout .col-qty select{
+width:110px;
 text-align:center;
+text-align-last:center;
+}
+
+.quantity-select{
+min-width:110px;
 }
 
 .attachments-grid{
@@ -355,4 +367,3 @@ padding:6px 8px;
 font-size:14px;
 margin-bottom:15px;
 }
-

@@ -1,5 +1,7 @@
 "use client";
 
+const quantityOptions = Array.from({ length: 100 }, (_, i) => i + 1);
+
 export default function ToolsTable({
   tools,
   toolCount,
@@ -23,8 +25,6 @@ export default function ToolsTable({
         value={toolCount}
         onChange={(e) => changeToolCount(e.target.value)}
       >
-
-        <option value={0}>Cantidad</option>
 
         {[...Array(25)].map((_, i) => (
           <option key={i + 1} value={i + 1}>
@@ -71,16 +71,20 @@ export default function ToolsTable({
 
                 {/* CANTIDAD */}
                 <td className="col-qty">
-                  <input
-                    type="number"
-                    min="0"
+                  <select
+                    className="quantity-select"
                     disabled={!enableTools}
-                    value={t.cantidad}
+                    value={t.cantidad || "1"}
                     onChange={(e) =>
                       updateTool(i, "cantidad", e.target.value)
                     }
-                    placeholder="0"
-                  />
+                  >
+                    {quantityOptions.map((qty) => (
+                      <option key={qty} value={qty}>
+                        {qty}
+                      </option>
+                    ))}
+                  </select>
                 </td>
 
                 {/* FACTURA */}

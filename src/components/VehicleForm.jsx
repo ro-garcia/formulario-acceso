@@ -6,7 +6,7 @@ export default function VehicleForm({ vehicle, setVehicle, enableVehicle }) {
   const count = vehicle.length || 1;
 
   const changeVehicleCount = (value) => {
-    const n = Math.min(parseInt(value) || 0, maxVehicles);
+    const n = Math.max(1, Math.min(parseInt(value) || 1, maxVehicles));
 
     let newVehicles = [...vehicle];
 
@@ -19,8 +19,7 @@ export default function VehicleForm({ vehicle, setVehicle, enableVehicle }) {
           modelo: "",
           color: "",
           marca: "",
-          poliza: "",
-          file: null
+          poliza: ""
         });
       }
     }
@@ -44,14 +43,18 @@ export default function VehicleForm({ vehicle, setVehicle, enableVehicle }) {
       {/* 🔢 selector cantidad */}
       <div className="form-field" style={{ marginBottom: "15px" }}>
         <label>Cantidad de vehículos (máx 5)</label>
-        <input
-          type="number"
-          min="1"
-          max="5"
+        <select
+          className="count-select"
           disabled={!enableVehicle}
           value={count}
           onChange={(e) => changeVehicleCount(e.target.value)}
-        />
+        >
+          {[...Array(maxVehicles)].map((_, i) => (
+            <option key={i + 1} value={i + 1}>
+              {i + 1}
+            </option>
+          ))}
+        </select>
       </div>
 
       {/* 📋 tabla */}
@@ -65,8 +68,7 @@ export default function VehicleForm({ vehicle, setVehicle, enableVehicle }) {
               <th>Modelo</th>
               <th>Color</th>
               <th>Marca</th>
-              <th>No. Póliza</th>
-              <th>Adjunto</th>
+              <th>No. Póliza De Seguro</th>
             </tr>
           </thead>
 
@@ -118,14 +120,6 @@ export default function VehicleForm({ vehicle, setVehicle, enableVehicle }) {
                     disabled={!enableVehicle}
                     value={v.poliza}
                     onChange={(e) => updateVehicle(index, "poliza", e.target.value)}
-                  />
-                </td>
-
-                <td>
-                  <input
-                    type="file"
-                    disabled={!enableVehicle}
-                    onChange={(e) => updateVehicle(index, "file", e.target.files[0])}
                   />
                 </td>
 

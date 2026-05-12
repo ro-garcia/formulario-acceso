@@ -12,6 +12,36 @@ import Attachments from "./components/Attachments";
 import { FORM_TYPES } from "./constants";
 import { formConfig } from "./formConfig";
 
+const createPerson = () => ({
+nombre:"",
+dpi:"",
+ocupacion:"",
+carne:""
+});
+
+const createVehicle = () => ({
+placa:"",
+modelo:"",
+color:"",
+marca:"",
+poliza:""
+});
+
+const createTool = () => ({
+descripcion:"",
+cantidad:"1",
+factura:""
+});
+
+const createMaterial = () => ({
+descripcion:"",
+cantidad:"1",
+factura:""
+});
+
+const hasSection = (type, section) =>
+(formConfig[type] || []).includes(section);
+
 export default function App() {
 
 const [formType,setFormType] = useState("");
@@ -34,16 +64,7 @@ const [materialCount,setMaterialCount] = useState(0);
 const [materials,setMaterials] = useState([]);
 
 /* ✅ VEHICULOS COMO ARRAY */
-const [vehicle,setVehicle] = useState([
-{
-placa:"",
-modelo:"",
-color:"",
-marca:"",
-poliza:"",
-file:null
-}
-]);
+const [vehicle,setVehicle] = useState([]);
 
 const [attachments,setAttachments] = useState({
 tarjeta:false,
@@ -59,7 +80,7 @@ const [sending,setSending] = useState(false);
 
 /* -------------------- RESET FORM -------------------- */
 
-const resetForm = () => {
+const resetForm = (nextFormType = formType) => {
 
 setGeneral({
 empresa:"",
@@ -68,27 +89,18 @@ fecha:"",
 facturas:""
 });
 
-setPersonCount(0);
-setPeople([]);
+setPersonCount(nextFormType ? 1 : 0);
+setPeople(nextFormType ? [createPerson()] : []);
 
-setToolCount(0);
-setTools([]);
+setToolCount(hasSection(nextFormType,"tools") ? 1 : 0);
+setTools(hasSection(nextFormType,"tools") ? [createTool()] : []);
 
 /* ✅ RESET MATERIALES */
-setMaterialCount(0);
-setMaterials([]);
+setMaterialCount(hasSection(nextFormType,"materials") ? 1 : 0);
+setMaterials(hasSection(nextFormType,"materials") ? [createMaterial()] : []);
 
 /* ✅ RESET VEHICULOS */
-setVehicle([
-{
-placa:"",
-modelo:"",
-color:"",
-marca:"",
-poliza:"",
-file:null
-}
-]);
+setVehicle(hasSection(nextFormType,"vehicle") ? [createVehicle()] : []);
 
 setAttachments({
 tarjeta:false,
@@ -103,20 +115,12 @@ carne:false
 
 /* -------------------- LOGICA -------------------- */
 
-const enableVehicle =
-formType === FORM_TYPES[1] ||
-formType === FORM_TYPES[2] ||
-formType === FORM_TYPES[3] ||
-formType === FORM_TYPES[4] ||
-formType === FORM_TYPES[5];
+const enableVehicle = hasSection(formType,"vehicle");
 
-const enableTools =
-formType === FORM_TYPES[2] ||
-formType === FORM_TYPES[3] ||
-formType === FORM_TYPES[5];
+const enableTools = hasSection(formType,"tools");
 
 /* ✅ MATERIALES USA MISMA LOGICA QUE TOOLS */
-const enableMaterials = enableTools;
+const enableMaterials = hasSection(formType,"materials");
 
 const enableInvoices =
 formType === FORM_TYPES[3] ||
@@ -124,16 +128,14 @@ formType === FORM_TYPES[5] ||
 formType === FORM_TYPES[4];
 
 const enableAttachments =
-formType === FORM_TYPES[1] ||
-formType === FORM_TYPES[2] ||
-formType === FORM_TYPES[3];
+Boolean(formType) && formType !== FORM_TYPES[0];
 
 
 /* -------------------- PERSONAS -------------------- */
 
 const changePersonCount = (value) => {
 
-const n = parseInt(value);
+const n = Math.max(1, parseInt(value) || 1);
 setPersonCount(n);
 
 let newPeople = [...people];
@@ -142,12 +144,7 @@ if (newPeople.length > n) {
 newPeople = newPeople.slice(0,n);
 } else {
 while(newPeople.length < n){
-newPeople.push({
-nombre:"",
-dpi:"",
-ocupacion:"",
-carne:""
-});
+newPeople.push(createPerson());
 }
 }
 
@@ -165,7 +162,7 @@ setPeople(newPeople);
 
 const changeToolCount = (value) => {
 
-const n = parseInt(value);
+const n = Math.max(1, parseInt(value) || 1);
 setToolCount(n);
 
 let newTools = [...tools];
@@ -174,11 +171,7 @@ if(newTools.length > n){
 newTools = newTools.slice(0,n);
 }else{
 while(newTools.length < n){
-newTools.push({
-descripcion:"",
-cantidad:"",
-factura:""
-});
+newTools.push(createTool());
 }
 }
 
@@ -196,7 +189,7 @@ setTools(newTools);
 
 const changeMaterialCount = (value) => {
 
-const n = parseInt(value);
+const n = Math.max(1, parseInt(value) || 1);
 setMaterialCount(n);
 
 let newMaterials = [...materials];
@@ -205,11 +198,7 @@ if(newMaterials.length > n){
 newMaterials = newMaterials.slice(0,n);
 }else{
 while(newMaterials.length < n){
-newMaterials.push({
-descripcion:"",
-cantidad:"",
-factura:""
-});
+newMaterials.push(createMaterial());
 }
 }
 
@@ -222,12 +211,55 @@ newMaterials[index][field] = value;
 setMaterials(newMaterials);
 };
 
+const validateForm = () => {
+
+if(!formType){
+alert("Selecciona el tipo de acceso que deseas solicitar.");
+return false;
+}
+
+if(personCount < 1 || people.length < 1){
+alert("Debes agregar al menos una persona.");
+return false;
+}
+
+if(enableVehicle && vehicle.length < 1){
+alert("Debes agregar al menos un vehiculo.");
+return false;
+}
+
+if(enableTools && (toolCount < 1 || tools.length < 1)){
+alert("Debes agregar al menos una herramienta.");
+return false;
+}
+
+if(enableTools && tools.some((tool) => Number(tool.cantidad || 1) < 1)){
+alert("La cantidad minima de cada herramienta debe ser 1.");
+return false;
+}
+
+if(enableMaterials && (materialCount < 1 || materials.length < 1)){
+alert("Debes agregar al menos un material.");
+return false;
+}
+
+if(enableMaterials && materials.some((material) => Number(material.cantidad || 1) < 1)){
+alert("La cantidad minima de cada material debe ser 1.");
+return false;
+}
+
+return true;
+
+};
+
 
 /* -------------------- ENVIAR FORMULARIO -------------------- */
 
 const submitForm = async () => {
 
 if(sending) return;
+
+if(!validateForm()) return;
 
 const now = Date.now();
 
@@ -265,7 +297,7 @@ numeroCarne: p.carne
 herramientas: tools.map((t,i)=>({
 numeroItem: String(i+1),
 descripcion: t.descripcion,
-cantidad: t.cantidad,
+cantidad: t.cantidad || "1",
 numeroFactura: t.factura
 })),
 
@@ -273,7 +305,7 @@ numeroFactura: t.factura
 materiales: materials.map((m,i)=>({
 numeroItem: String(i+1),
 descripcion: m.descripcion,
-cantidad: m.cantidad,
+cantidad: m.cantidad || "1",
 numeroFactura: m.factura
 })),
 
@@ -306,7 +338,7 @@ alert("Formulario enviado correctamente");
 
 setLastSubmit(now);
 
-resetForm();
+resetForm(formType);
 
 }else{
 
@@ -399,7 +431,7 @@ return (
 <FormTypeSelector
 formType={formType}
 setFormType={(value)=>{
-resetForm();
+resetForm(value);
 setFormType(value);
 }}
 />

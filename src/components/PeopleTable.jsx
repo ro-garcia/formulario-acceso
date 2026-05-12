@@ -19,7 +19,6 @@ value={personCount}
 onChange={(e)=>changePersonCount(e.target.value)}
 >
 
-<option value={0}>Cantidad</option>
 <option value={1}>1</option>
 <option value={2}>2</option>
 <option value={3}>3</option>
@@ -45,7 +44,7 @@ onChange={(e)=>changePersonCount(e.target.value)}
 <th>Nombre</th>
 <th>DPI / Licencia</th>
 <th>Ocupación</th>
-<th>Carné (Si aplica)</th>
+<th>No. Carne EPQ (Si aplica)</th>
 </tr>
 
 </thead>

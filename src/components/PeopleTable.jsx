@@ -13,6 +13,10 @@ return(
 Datos del personal que ingresará, seleccione cantidad:
 </div>
 
+<p className="section-subtitle">
+Todo el personal que coloque en este espacio deberá haber realizado la inducción de Salud y Seguridad Ocupacional, de lo contrario el acceso será negado de forma inmediata.
+</p>
+
 <select
 className="person-count"
 value={personCount}
@@ -42,7 +46,7 @@ onChange={(e)=>changePersonCount(e.target.value)}
 <tr>
 <th>No</th>
 <th>Nombre</th>
-<th>DPI / Licencia</th>
+<th>DPI / Licencia/ Pasaporte</th>
 <th>Ocupación</th>
 <th>No. Carne EPQ (Si aplica)</th>
 </tr>
@@ -59,6 +63,7 @@ onChange={(e)=>changePersonCount(e.target.value)}
 
 <td>
 <input
+required
 value={p.nombre}
 onChange={(e)=>updatePerson(i,"nombre",e.target.value)}
 />
@@ -66,6 +71,7 @@ onChange={(e)=>updatePerson(i,"nombre",e.target.value)}
 
 <td>
 <input
+required
 value={p.dpi}
 onChange={(e)=>updatePerson(i,"dpi",e.target.value)}
 />
@@ -73,6 +79,7 @@ onChange={(e)=>updatePerson(i,"dpi",e.target.value)}
 
 <td>
 <input
+required
 value={p.ocupacion}
 onChange={(e)=>updatePerson(i,"ocupacion",e.target.value)}
 />

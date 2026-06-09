@@ -60,6 +60,7 @@ export default function ToolsTable({
                 {/* DESCRIPCION */}
                 <td className="col-desc">
                   <input
+                    required
                     disabled={!enableTools}
                     value={t.descripcion}
                     onChange={(e) =>
@@ -73,6 +74,7 @@ export default function ToolsTable({
                 <td className="col-qty">
                   <select
                     className="quantity-select"
+                    required
                     disabled={!enableTools}
                     value={t.cantidad || "1"}
                     onChange={(e) =>
@@ -90,6 +92,7 @@ export default function ToolsTable({
                 {/* FACTURA */}
                 <td className="col-factura">
                   <input
+                    required
                     disabled={!enableTools}
                     value={t.factura || ""}
                     onChange={(e) =>

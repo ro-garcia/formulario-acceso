@@ -81,6 +81,7 @@ export default function VehicleForm({ vehicle, setVehicle, enableVehicle }) {
                 <td>
                   <input
                     type="text"
+                    required
                     disabled={!enableVehicle}
                     value={v.placa}
                     onChange={(e) => updateVehicle(index, "placa", e.target.value)}
@@ -90,6 +91,7 @@ export default function VehicleForm({ vehicle, setVehicle, enableVehicle }) {
                 <td>
                   <input
                     type="text"
+                    required
                     disabled={!enableVehicle}
                     value={v.modelo}
                     onChange={(e) => updateVehicle(index, "modelo", e.target.value)}
@@ -99,6 +101,7 @@ export default function VehicleForm({ vehicle, setVehicle, enableVehicle }) {
                 <td>
                   <input
                     type="text"
+                    required
                     disabled={!enableVehicle}
                     value={v.color}
                     onChange={(e) => updateVehicle(index, "color", e.target.value)}
@@ -108,6 +111,7 @@ export default function VehicleForm({ vehicle, setVehicle, enableVehicle }) {
                 <td>
                   <input
                     type="text"
+                    required
                     disabled={!enableVehicle}
                     value={v.marca}
                     onChange={(e) => updateVehicle(index, "marca", e.target.value)}
@@ -117,6 +121,7 @@ export default function VehicleForm({ vehicle, setVehicle, enableVehicle }) {
                 <td>
                   <input
                     type="text"
+                    required
                     disabled={!enableVehicle}
                     value={v.poliza}
                     onChange={(e) => updateVehicle(index, "poliza", e.target.value)}

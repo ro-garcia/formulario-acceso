@@ -60,6 +60,7 @@ export default function MaterialsTable({
                 {/* DESCRIPCION */}
                 <td className="col-desc">
                   <input
+                    required
                     disabled={!enableMaterials}
                     value={m.descripcion}
                     onChange={(e) =>
@@ -73,6 +74,7 @@ export default function MaterialsTable({
                 <td className="col-qty">
                   <select
                     className="quantity-select"
+                    required
                     disabled={!enableMaterials}
                     value={m.cantidad || "1"}
                     onChange={(e) =>
@@ -90,6 +92,7 @@ export default function MaterialsTable({
                 {/* FACTURA */}
                 <td className="col-factura">
                   <input
+                    required
                     disabled={!enableMaterials}
                     value={m.factura || ""}
                     onChange={(e) =>

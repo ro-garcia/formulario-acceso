@@ -1,4 +1,12 @@
+const getTodayDate = () => {
+const now = new Date();
+now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+return now.toISOString().slice(0,10);
+};
+
 export default function GeneralInfo({general,setGeneral,enableInvoices}){
+
+const today = getTodayDate();
 
 return(
 
@@ -14,8 +22,29 @@ Información General
 <label>Empresa que solicita</label>
 <input
 type="text"
+required
 value={general.empresa}
 onChange={(e)=>setGeneral({...general,empresa:e.target.value})}
+/>
+</div>
+
+<div className="form-field">
+<label>Número de teléfono</label>
+<input
+type="tel"
+required
+value={general.telefono}
+onChange={(e)=>setGeneral({...general,telefono:e.target.value})}
+/>
+</div>
+
+<div className="form-field">
+<label>Correo electrónico</label>
+<input
+type="email"
+required
+value={general.correo}
+onChange={(e)=>setGeneral({...general,correo:e.target.value})}
 />
 </div>
 
@@ -23,6 +52,7 @@ onChange={(e)=>setGeneral({...general,empresa:e.target.value})}
 <label>Motivo de ingreso</label>
 <input
 type="text"
+required
 value={general.motivo}
 onChange={(e)=>setGeneral({...general,motivo:e.target.value})}
 />
@@ -32,6 +62,8 @@ onChange={(e)=>setGeneral({...general,motivo:e.target.value})}
 <label>Fecha</label>
 <input
 type="date"
+required
+min={today}
 value={general.fecha}
 onChange={(e)=>setGeneral({...general,fecha:e.target.value})}
 />
@@ -44,6 +76,7 @@ onChange={(e)=>setGeneral({...general,fecha:e.target.value})}
 <input
 type="text"
 disabled={!enableInvoices}
+required={enableInvoices}
 value={general.facturas}
 onChange={(e)=>setGeneral({...general,facturas:e.target.value})}
 />

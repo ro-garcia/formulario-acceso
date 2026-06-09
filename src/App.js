@@ -8,6 +8,7 @@ import ToolsTable from "./components/ToolsTable";
 import MaterialsTable from "./components/Materials";
 import VehicleForm from "./components/VehicleForm";
 import Attachments from "./components/Attachments";
+import InductionForm from "./components/InductionForm";
 
 import { FORM_TYPES } from "./constants";
 import { formConfig } from "./formConfig";
@@ -42,12 +43,30 @@ factura:""
 const hasSection = (type, section) =>
 (formConfig[type] || []).includes(section);
 
+const isBlank = (value) => !String(value || "").trim();
+
+const getTodayDate = () => {
+const now = new Date();
+now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+return now.toISOString().slice(0,10);
+};
+
+const isInvalidQuantity = (value) => {
+const quantity = Number(value || 1);
+return !Number.isFinite(quantity) || quantity < 1;
+};
+
 export default function App() {
+
+const [currentView,setCurrentView] = useState("induction");
+const [accessUnlocked,setAccessUnlocked] = useState(false);
 
 const [formType,setFormType] = useState("");
 
 const [general,setGeneral] = useState({
 empresa:"",
+telefono:"",
+correo:"",
 motivo:"",
 fecha:"",
 facturas:""
@@ -84,6 +103,8 @@ const resetForm = (nextFormType = formType) => {
 
 setGeneral({
 empresa:"",
+telefono:"",
+correo:"",
 motivo:"",
 fecha:"",
 facturas:""
@@ -218,8 +239,59 @@ alert("Selecciona el tipo de acceso que deseas solicitar.");
 return false;
 }
 
+if(isBlank(general.empresa)){
+alert("Empresa que solicita es obligatorio.");
+return false;
+}
+
+if(isBlank(general.telefono)){
+alert("Numero de telefono es obligatorio.");
+return false;
+}
+
+if(isBlank(general.correo)){
+alert("Correo electronico es obligatorio.");
+return false;
+}
+
+if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(general.correo)){
+alert("Correo electronico no tiene un formato valido.");
+return false;
+}
+
+if(isBlank(general.motivo)){
+alert("Motivo de ingreso es obligatorio.");
+return false;
+}
+
+if(isBlank(general.fecha)){
+alert("Fecha es obligatorio.");
+return false;
+}
+
+if(general.fecha < getTodayDate()){
+alert("La fecha no puede ser anterior al dia de hoy.");
+return false;
+}
+
+if(enableInvoices && isBlank(general.facturas)){
+alert("Facturas es obligatorio para este tipo de formulario.");
+return false;
+}
+
 if(personCount < 1 || people.length < 1){
 alert("Debes agregar al menos una persona.");
+return false;
+}
+
+const invalidPersonIndex = people.findIndex((person) =>
+isBlank(person.nombre) ||
+isBlank(person.dpi) ||
+isBlank(person.ocupacion)
+);
+
+if(invalidPersonIndex >= 0){
+alert(`Completa Nombre, DPI / Licencia y Ocupacion de la persona ${invalidPersonIndex + 1}.`);
 return false;
 }
 
@@ -228,12 +300,36 @@ alert("Debes agregar al menos un vehiculo.");
 return false;
 }
 
+const invalidVehicleIndex = vehicle.findIndex((item) =>
+isBlank(item.placa) ||
+isBlank(item.modelo) ||
+isBlank(item.color) ||
+isBlank(item.marca) ||
+isBlank(item.poliza)
+);
+
+if(enableVehicle && invalidVehicleIndex >= 0){
+alert(`Completa todos los datos del vehiculo ${invalidVehicleIndex + 1}.`);
+return false;
+}
+
 if(enableTools && (toolCount < 1 || tools.length < 1)){
 alert("Debes agregar al menos una herramienta.");
 return false;
 }
 
-if(enableTools && tools.some((tool) => Number(tool.cantidad || 1) < 1)){
+const invalidToolIndex = tools.findIndex((tool) =>
+isBlank(tool.descripcion) ||
+isInvalidQuantity(tool.cantidad) ||
+isBlank(tool.factura)
+);
+
+if(enableTools && invalidToolIndex >= 0){
+alert(`Completa Descripcion, Cantidad y No. Factura de la herramienta ${invalidToolIndex + 1}.`);
+return false;
+}
+
+if(enableTools && tools.some((tool) => isInvalidQuantity(tool.cantidad))){
 alert("La cantidad minima de cada herramienta debe ser 1.");
 return false;
 }
@@ -243,7 +339,18 @@ alert("Debes agregar al menos un material.");
 return false;
 }
 
-if(enableMaterials && materials.some((material) => Number(material.cantidad || 1) < 1)){
+const invalidMaterialIndex = materials.findIndex((material) =>
+isBlank(material.descripcion) ||
+isInvalidQuantity(material.cantidad) ||
+isBlank(material.factura)
+);
+
+if(enableMaterials && invalidMaterialIndex >= 0){
+alert(`Completa Descripcion, Cantidad y No. Factura del material ${invalidMaterialIndex + 1}.`);
+return false;
+}
+
+if(enableMaterials && materials.some((material) => isInvalidQuantity(material.cantidad))){
 alert("La cantidad minima de cada material debe ser 1.");
 return false;
 }
@@ -271,51 +378,50 @@ return;
 setSending(true);
 
 const payload = {
+  tipoFormulario: formType,
 
-tipoFormulario: formType,
+  empresaSolicita: general.empresa,
+  numeroTelefono: general.telefono,
+  correoElectronico: general.correo,
+  motivoIngreso: general.motivo,
+  fechaSolicitudIngreso: general.fecha,
+  numeroFacturas: general.facturas,
 
-empresaSolicita: general.empresa,
-motivoIngreso: general.motivo,
-fechaSolicitudIngreso: general.fecha,
-numeroFacturas: general.facturas,
+  personas: people.map(p => ({
+    nombre: p.nombre,
+    documentoID: p.dpi,
+    ocupacion: p.ocupacion,
+    numeroCarne: p.carne
+  })),
 
-vehiculos: vehicle.map(v => ({
-placa: v.placa,
-color: v.color,
-marca: v.marca,
-modelo: v.modelo,
-numeroPoliza: v.poliza
-})),
+  vehiculos: vehicle.map(v => ({
+    placa: v.placa,
+    modelo: v.modelo,
+    color: v.color,
+    marca: v.marca,
+    poliza: v.poliza
+  })),
 
-personas: people.map(p => ({
-nombre: p.nombre,
-documentoID: p.dpi,
-ocupacion: p.ocupacion,
-numeroCarne: p.carne
-})),
+  herramientas: tools.map((t, i) => ({
+    numeroItem: String(i + 1),
+    descripcion: t.descripcion,
+    cantidad: t.cantidad || "1",
+    numeroFactura: t.factura
+  })),
 
-herramientas: tools.map((t,i)=>({
-numeroItem: String(i+1),
-descripcion: t.descripcion,
-cantidad: t.cantidad || "1",
-numeroFactura: t.factura
-})),
+  materiales: materials.map((m, i) => ({
+    numeroItem: String(i + 1),
+    descripcion: m.descripcion,
+    cantidad: m.cantidad || "1",
+    numeroFactura: m.factura
+  })),
 
-/* ✅ NUEVO */
-materiales: materials.map((m,i)=>({
-numeroItem: String(i+1),
-descripcion: m.descripcion,
-cantidad: m.cantidad || "1",
-numeroFactura: m.factura
-})),
-
-adjuntos: Object.keys(attachments)
-.filter(key => attachments[key])
-.map(key => ({
-nombre:key,
-contenido:""
-}))
-
+  adjuntos: Object.keys(attachments)
+    .filter(key => attachments[key])
+    .map(key => ({
+      nombre: key,
+      contenido: ""
+    }))
 };
 
 console.log("Payload enviado:",payload);
@@ -357,6 +463,31 @@ alert("No se pudo confirmar el envío, pero el formulario pudo haberse recibido.
 setSending(false);
 
 };
+
+const openInductionForm = () => {
+setCurrentView("induction");
+if(typeof window !== "undefined"){
+window.history.pushState(null,"","#induccion-sso");
+window.scrollTo({ top:0, behavior:"smooth" });
+}
+};
+
+const openAccessForm = () => {
+setAccessUnlocked(true);
+setCurrentView("access");
+if(typeof window !== "undefined"){
+window.history.pushState(null,"","#formularios-acceso");
+window.scrollTo({ top:0, behavior:"smooth" });
+}
+};
+
+if(currentView === "induction" || !accessUnlocked){
+return(
+<div className="container">
+<InductionForm onComplete={openAccessForm}/>
+</div>
+);
+}
 
 
 /* -------------------- COMPONENTES -------------------- */
@@ -426,7 +557,7 @@ return (
 
 <div className="container">
 
-<Header/>
+<Header onOpenInduction={openInductionForm}/>
 
 <FormTypeSelector
 formType={formType}

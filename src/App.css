@@ -360,6 +360,45 @@ opacity:0.55;
 cursor:not-allowed;
 }
 
+.declaration-card{
+background:#f8fafc;
+border:1px solid #dbe3ec;
+border-radius:8px;
+padding:16px;
+color:#334155;
+}
+
+.declaration-card p{
+font-size:14px;
+line-height:1.55;
+margin-bottom:12px;
+}
+
+.declaration-check{
+display:flex;
+align-items:flex-start;
+gap:10px;
+padding:12px;
+border:1px solid #cbd5e1;
+border-radius:8px;
+background:white;
+font-weight:600;
+color:#0f172a;
+cursor:pointer;
+}
+
+.declaration-check input{
+width:18px;
+height:18px;
+min-width:18px;
+margin-top:1px;
+cursor:pointer;
+}
+
+.declaration-check span{
+line-height:1.4;
+}
+
 /* CONTENEDOR CON SCROLL */
 
 .table-scroll{

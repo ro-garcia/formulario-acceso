@@ -16,7 +16,7 @@ const [personCount,setPersonCount] = useState(1);
 const [people,setPeople] = useState([createInductionPerson()]);
 const [videoCompleted,setVideoCompleted] = useState(false);
 const [videoReady,setVideoReady] = useState(false);
-const [evidence,setEvidence] = useState(null);
+const [declarationAccepted,setDeclarationAccepted] = useState(false);
 
 const iframeRef = useRef(null);
 const playerRef = useRef(null);
@@ -125,8 +125,8 @@ alert(`Completa Nombre completo, DPI / Licencia / Pasaporte y adjunto del docume
 return;
 }
 
-if(!evidence){
-alert("Debes adjuntar la evidencia fotografica de la visualizacion del video de induccion.");
+if(!declarationAccepted){
+alert("Debes aceptar la declaracion para continuar con el formulario de acceso.");
 return;
 }
 
@@ -136,7 +136,7 @@ nombre: person.nombre,
 dpi: person.dpi,
 adjuntoDpi: person.dpiFile?.name || ""
 })),
-evidenciaFotografica: evidence.name
+declaracionAceptada: declarationAccepted
 });
 
 alert("Formulario de induccion registrado correctamente. Ya puedes continuar con el formulario de acceso al recito portuario.");
@@ -262,29 +262,33 @@ onChange={(e)=>updatePerson(i,"dpiFile",e.target.files[0] || null)}
 
 <div className="section">
 <div className="section-title">
-Evidencia Fotográfica de la visualización del video.
+Declaración de visualización y cumplimiento
 </div>
 
-<div className="form-field">
-<label>Adjuntar evidencia fotográfica</label>
+<div className="declaration-card">
+<p>
+Al darle aceptar declaro haber visto y comprendido el video informativo sobre las medidas de seguridad industrial aplicables en la Terminal Privada de REPIMEX, y acepto cumplir con la normativa operacional vigente, así como con todas las instrucciones y disposiciones de seguridad emitidas por la Terminal durante mi ingreso y permanencia en las instalaciones.
+</p>
+
+<p>
+Asimismo, reconozco que el incumplimiento de dichas normas y medidas de seguridad podrá poner en riesgo mi integridad física, la de terceros y las operaciones de la Terminal, por lo que asumo la responsabilidad por cualquier acto u omisión imputable a mi persona que contravenga las disposiciones establecidas, liberando a REPIMEX de responsabilidad por incidentes, daños o perjuicios derivados de dicho incumplimiento.
+</p>
+
+<label className="declaration-check">
 <input
-type="file"
-accept="image/*"
+type="checkbox"
+checked={declarationAccepted}
+onChange={(e)=>setDeclarationAccepted(e.target.checked)}
 required
-onChange={(e)=>setEvidence(e.target.files[0] || null)}
 />
+<span>Acepto esta declaración para todo el personal incluido en este formulario.</span>
+</label>
 </div>
-
-{evidence && (
-<div className="attachment-status">
-Archivo seleccionado: {evidence.name}
-</div>
-)}
 </div>
 </fieldset>
 
 <div className="submit-actions">
-<button type="submit" className="primary-button" disabled={!videoCompleted}>
+<button type="submit" className="primary-button" disabled={!videoCompleted || !declarationAccepted}>
 Enviar Formulario de Inducción y Continuar
 </button>
 </div>

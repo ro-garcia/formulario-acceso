@@ -69,18 +69,17 @@ onChange={(e)=>setGeneral({...general,fecha:e.target.value})}
 />
 </div>
 
-
-
+{enableInvoices && (
 <div className="form-field">
 <label>Facturas (separadas por comas)</label>
 <input
 type="text"
-disabled={!enableInvoices}
-required={enableInvoices}
+required
 value={general.facturas}
 onChange={(e)=>setGeneral({...general,facturas:e.target.value})}
 />
 </div>
+)}
 
 </div>
 

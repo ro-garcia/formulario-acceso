@@ -8,6 +8,10 @@ return(
 Archivos Adjuntos
 </div>
 
+<p className="attachment-note">
+Si no contiene los documentos del vehículo que se solicitan adjuntar, gestionar su ingreso con la Carta de visita sin vehículo.
+</p>
+
 <div className="attachments-grid">
 
 {Object.keys(attachments).map((key)=>(

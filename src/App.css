@@ -541,6 +541,17 @@ gap:10px;
 margin-top:10px;
 }
 
+.attachment-note{
+background:#f8fafc;
+border-left:4px solid #0f172a;
+border-radius:6px;
+color:#334155;
+font-size:14px;
+line-height:1.45;
+margin:-4px 0 14px;
+padding:10px 12px;
+}
+
 .attachment-card{
 border:1px solid #ddd;
 border-radius:8px;

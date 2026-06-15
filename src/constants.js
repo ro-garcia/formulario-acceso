@@ -6,3 +6,9 @@ export const FORM_TYPES = [
   "Carta Para Solicitud De Egreso / Ingreso",
   "Carta Para Ingreso de Materiales"
 ];
+
+export const VISIBLE_FORM_TYPES = [
+  FORM_TYPES[0],
+  FORM_TYPES[1],
+  FORM_TYPES[3]
+];

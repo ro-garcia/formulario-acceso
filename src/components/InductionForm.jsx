@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 
 const maxPeople = 10;
+const INDUCTION_TITLE = "Inducción de Salud y Seguridad Ocupacional";
+const CAPACITACION_URL = "https://default8025d0a6c807420a9a6c85c04d5978.6f.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/207d44956f28463c862fdb7efd0bc676/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=GulChneyHiC001GBknlk5rvTuqxkAbYtZ9j2b__jMkA";
 
 const createInductionPerson = () => ({
 nombre:"",
@@ -10,6 +12,18 @@ dpiFile:null
 
 const isBlank = (value) => !String(value || "").trim();
 
+const fileToBase64 = (file) => new Promise((resolve,reject) => {
+const reader = new FileReader();
+
+reader.onload = () => {
+const result = String(reader.result || "");
+resolve(result.includes(",") ? result.split(",")[1] : result);
+};
+
+reader.onerror = () => reject(reader.error);
+reader.readAsDataURL(file);
+});
+
 export default function InductionForm({ onComplete }){
 
 const [personCount,setPersonCount] = useState(1);
@@ -17,6 +31,7 @@ const [people,setPeople] = useState([createInductionPerson()]);
 const [videoCompleted,setVideoCompleted] = useState(false);
 const [videoReady,setVideoReady] = useState(false);
 const [declarationAccepted,setDeclarationAccepted] = useState(false);
+const [sending,setSending] = useState(false);
 
 const iframeRef = useRef(null);
 const playerRef = useRef(null);
@@ -106,8 +121,10 @@ newPeople[index][field] = value;
 setPeople(newPeople);
 };
 
-const submitInductionForm = (e) => {
+const submitInductionForm = async (e) => {
 e.preventDefault();
+
+if(sending) return;
 
 if(!videoCompleted){
 alert("Debes ver el video completo antes de enviar el formulario.");
@@ -130,17 +147,55 @@ alert("Debes aceptar la declaracion para continuar con el formulario de acceso."
 return;
 }
 
-console.log("Formulario de induccion:",{
-personas: people.map((person) => ({
-nombre: person.nombre,
-dpi: person.dpi,
-adjuntoDpi: person.dpiFile?.name || ""
-})),
-declaracionAceptada: declarationAccepted
+setSending(true);
+
+let shouldContinue = false;
+
+try{
+const fechaConfirmacion = new Date().toISOString();
+
+const capacitacion = await Promise.all(people.map(async (person) => ({
+titulo: INDUCTION_TITLE,
+nombreCompleto: person.nombre.trim(),
+numeroDocumento: person.dpi.trim(),
+aceptaDeclaracion: declarationAccepted,
+fechaConfirmacion,
+adjuntos: [
+{
+nombre: person.dpiFile.name,
+contenido: await fileToBase64(person.dpiFile)
+}
+]
+})));
+
+const payload = { capacitacion };
+
+console.log("Payload capacitacion:",payload);
+
+const response = await fetch(CAPACITACION_URL,{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify(payload)
 });
 
-alert("Formulario de induccion registrado correctamente. Ya puedes continuar con el formulario de acceso al recito portuario.");
+if(response.status !== 200 && response.status !== 202){
+throw new Error("Respuesta inesperada");
+}
+
+alert("Formulario de induccion registrado correctamente. Ya puedes continuar con el formulario de acceso al recinto portuario.");
+shouldContinue = true;
+}catch(error){
+console.error("Error enviando formulario de capacitacion:",error);
+alert("No se pudo enviar el formulario de capacitacion. Intenta nuevamente.");
+}finally{
+setSending(false);
+}
+
+if(shouldContinue){
 onComplete?.();
+}
 };
 
 return(
@@ -190,7 +245,7 @@ allowFullScreen
 </div>
 
 <form onSubmit={submitInductionForm}>
-<fieldset className="induction-fieldset" disabled={!videoCompleted}>
+<fieldset className="induction-fieldset" disabled={!videoCompleted || sending}>
 <div className="section">
 <div className="section-title">
 Datos del personal que confirma ver el video de inducción. seleccione cantidad:
@@ -288,8 +343,8 @@ required
 </fieldset>
 
 <div className="submit-actions">
-<button type="submit" className="primary-button" disabled={!videoCompleted || !declarationAccepted}>
-Enviar Formulario de Inducción y Continuar
+<button type="submit" className="primary-button" disabled={!videoCompleted || !declarationAccepted || sending}>
+{sending ? "Enviando..." : "Enviar Formulario de Inducción y Continuar"}
 </button>
 </div>
 </form>

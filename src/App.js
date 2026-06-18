@@ -51,6 +51,18 @@ now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
 return now.toISOString().slice(0,10);
 };
 
+const fileToBase64 = (file) => new Promise((resolve,reject) => {
+const reader = new FileReader();
+
+reader.onload = () => {
+const result = String(reader.result || "");
+resolve(result.includes(",") ? result.split(",")[1] : result);
+};
+
+reader.onerror = () => reject(reader.error);
+reader.readAsDataURL(file);
+});
+
 const isInvalidQuantity = (value) => {
 const quantity = Number(value || 1);
 return !Number.isFinite(quantity) || quantity < 1;
@@ -92,6 +104,7 @@ licencia:false,
 facturas:false,
 carne:false
 });
+const [attachmentsResetKey,setAttachmentsResetKey] = useState(0);
 
 const [lastSubmit,setLastSubmit] = useState(null);
 const [sending,setSending] = useState(false);
@@ -130,6 +143,7 @@ licencia:false,
 facturas:false,
 carne:false
 });
+setAttachmentsResetKey((key) => key + 1);
 
 };
 
@@ -377,6 +391,17 @@ return;
 
 setSending(true);
 
+try{
+
+const adjuntos = await Promise.all(
+Object.entries(attachments)
+.filter(([,file]) => file)
+.map(async ([key,file]) => ({
+nombre: `${key}-${file.name}`,
+contenido: await fileToBase64(file)
+}))
+);
+
 const payload = {
   tipoFormulario: formType,
 
@@ -416,17 +441,10 @@ const payload = {
     numeroFactura: m.factura
   })),
 
-  adjuntos: Object.keys(attachments)
-    .filter(key => attachments[key])
-    .map(key => ({
-      nombre: key,
-      contenido: ""
-    }))
+  adjuntos
 };
 
 console.log("Payload enviado:",payload);
-
-try{
 
 const API_URL = process.env.REACT_APP_POWER_AUTOMATE_URL;
 
@@ -507,6 +525,7 @@ attachments: (
 attachments={attachments}
 setAttachments={setAttachments}
 enableAttachments={enableAttachments}
+attachmentsResetKey={attachmentsResetKey}
 />
 ),
 

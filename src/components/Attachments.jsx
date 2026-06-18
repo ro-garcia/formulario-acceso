@@ -1,4 +1,4 @@
-export default function Attachments({attachments,setAttachments,enableAttachments}){
+export default function Attachments({attachments,setAttachments,enableAttachments,attachmentsResetKey}){
 
 return(
 
@@ -14,7 +14,10 @@ Si no contiene los documentos del vehículo que se solicitan adjuntar, gestionar
 
 <div className="attachments-grid">
 
-{Object.keys(attachments).map((key)=>(
+{Object.keys(attachments).map((key)=>{
+const selectedFile = attachments[key];
+
+return(
 
 <div key={key} className="attachment-card">
 
@@ -23,31 +26,30 @@ Si no contiene los documentos del vehículo que se solicitan adjuntar, gestionar
 </label>
 
 <input
+key={`${key}-${attachmentsResetKey}`}
 type="file"
+accept="image/*,.pdf,application/pdf"
 disabled={!enableAttachments}
 onChange={(e)=>{
-
-if(e.target.files.length>0){
+const file = e.target.files?.[0] || false;
 
 setAttachments({
 ...attachments,
-[key]:true
+[key]:file
 })
-
-}
-
 }}
 />
 
-{attachments[key] && (
+{selectedFile && (
 <div className="attachment-status">
-✔ Archivo cargado
+Archivo cargado: {selectedFile.name}
 </div>
 )}
 
 </div>
 
-))}
+);
+})}
 
 </div>
 

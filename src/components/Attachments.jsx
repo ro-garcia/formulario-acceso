@@ -30,6 +30,7 @@ key={`${key}-${attachmentsResetKey}`}
 type="file"
 accept="image/*,.pdf,application/pdf"
 disabled={!enableAttachments}
+required={enableAttachments}
 onChange={(e)=>{
 const file = e.target.files?.[0] || false;
 

@@ -68,6 +68,11 @@ const quantity = Number(value || 1);
 return !Number.isFinite(quantity) || quantity < 1;
 };
 
+const getMissingAttachments = (attachments) =>
+Object.entries(attachments)
+.filter(([,file]) => !file)
+.map(([key]) => key);
+
 export default function App() {
 
 const [currentView,setCurrentView] = useState("induction");
@@ -367,6 +372,15 @@ return false;
 if(enableMaterials && materials.some((material) => isInvalidQuantity(material.cantidad))){
 alert("La cantidad minima de cada material debe ser 1.");
 return false;
+}
+
+if(enableAttachments){
+const missingAttachments = getMissingAttachments(attachments);
+
+if(missingAttachments.length > 0){
+alert(`Debes adjuntar todos los archivos solicitados: ${missingAttachments.join(", ")}.`);
+return false;
+}
 }
 
 return true;

@@ -1,4 +1,4 @@
-export default function Attachments({attachments,setAttachments,enableAttachments,attachmentsResetKey}){
+export default function Attachments({attachments,setAttachments,enableAttachments,attachmentsResetKey,attachmentError}){
 
 return(
 
@@ -11,6 +11,12 @@ Archivos Adjuntos
 <p className="attachment-note">
 Si no contiene los documentos del vehículo que se solicitan adjuntar, gestionar su ingreso con la Carta de visita sin vehículo.
 </p>
+
+{attachmentError && (
+<p className="attachment-error" role="alert">
+{attachmentError}
+</p>
+)}
 
 <div className="attachments-grid">
 

@@ -552,6 +552,19 @@ margin:-4px 0 14px;
 padding:10px 12px;
 }
 
+.attachment-error{
+background:#fef2f2;
+border:1px solid #fecaca;
+border-left:4px solid #dc2626;
+border-radius:6px;
+color:#991b1b;
+font-size:14px;
+font-weight:600;
+line-height:1.45;
+margin:-4px 0 14px;
+padding:10px 12px;
+}
+
 .attachment-card{
 border:1px solid #ddd;
 border-radius:8px;

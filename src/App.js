@@ -68,10 +68,38 @@ const quantity = Number(value || 1);
 return !Number.isFinite(quantity) || quantity < 1;
 };
 
+const ATTACHMENT_LABELS = {
+tarjeta:"tarjeta",
+poliza:"poliza",
+licencia:"licencia",
+facturas:"facturas",
+carne:"carne"
+};
+
+const formatList = (items) => {
+if(items.length <= 1) return items[0] || "";
+if(items.length === 2) return `${items[0]} y ${items[1]}`;
+return `${items.slice(0,-1).join(", ")} y ${items[items.length - 1]}`;
+};
+
 const getMissingAttachments = (attachments) =>
 Object.entries(attachments)
 .filter(([,file]) => !file)
 .map(([key]) => key);
+
+const getMissingAttachmentMessage = (attachments) => {
+const missingAttachments = getMissingAttachments(attachments);
+
+if(missingAttachments.length === 0) return "";
+
+const missingNames = formatList(
+missingAttachments.map((key) => ATTACHMENT_LABELS[key] || key)
+);
+
+return missingAttachments.length === 1
+? `Te falta el adjunto: ${missingNames}. Debes cargar los 5 adjuntos para enviar el formulario.`
+: `Te faltan los adjuntos: ${missingNames}. Debes cargar los 5 adjuntos para enviar el formulario.`;
+};
 
 export default function App() {
 
@@ -110,6 +138,7 @@ facturas:false,
 carne:false
 });
 const [attachmentsResetKey,setAttachmentsResetKey] = useState(0);
+const [attachmentError,setAttachmentError] = useState("");
 
 const [lastSubmit,setLastSubmit] = useState(null);
 const [sending,setSending] = useState(false);
@@ -149,6 +178,7 @@ facturas:false,
 carne:false
 });
 setAttachmentsResetKey((key) => key + 1);
+setAttachmentError("");
 
 };
 
@@ -170,6 +200,10 @@ formType === FORM_TYPES[4];
 const enableAttachments =
 Boolean(formType) && formType !== FORM_TYPES[0];
 
+const updateAttachments = (nextAttachments) => {
+setAttachments(nextAttachments);
+setAttachmentError("");
+};
 
 /* -------------------- PERSONAS -------------------- */
 
@@ -252,6 +286,8 @@ setMaterials(newMaterials);
 };
 
 const validateForm = () => {
+
+setAttachmentError("");
 
 if(!formType){
 alert("Selecciona el tipo de acceso que deseas solicitar.");
@@ -375,10 +411,11 @@ return false;
 }
 
 if(enableAttachments){
-const missingAttachments = getMissingAttachments(attachments);
+const attachmentMessage = getMissingAttachmentMessage(attachments);
 
-if(missingAttachments.length > 0){
-alert(`Debes adjuntar todos los archivos solicitados: ${missingAttachments.join(", ")}.`);
+if(attachmentMessage){
+setAttachmentError(attachmentMessage);
+alert(attachmentMessage);
 return false;
 }
 }
@@ -537,9 +574,10 @@ enableInvoices={enableInvoices}
 attachments: (
 <Attachments
 attachments={attachments}
-setAttachments={setAttachments}
+setAttachments={updateAttachments}
 enableAttachments={enableAttachments}
 attachmentsResetKey={attachmentsResetKey}
+attachmentError={attachmentError}
 />
 ),
 

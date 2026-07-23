@@ -1,3 +1,11 @@
+const attachmentLabels = {
+tarjeta:"Tarjeta",
+poliza:"Poliza",
+licencia:"Licencia",
+facturas:"Facturas",
+carne:"Carne"
+};
+
 export default function Attachments({attachments,setAttachments,enableAttachments,attachmentsResetKey,attachmentError}){
 
 return(
@@ -28,7 +36,7 @@ return(
 <div key={key} className="attachment-card">
 
 <label className="attachment-name">
-{key}
+{attachmentLabels[key] || key}
 </label>
 
 <input

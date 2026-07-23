@@ -69,11 +69,11 @@ return !Number.isFinite(quantity) || quantity < 1;
 };
 
 const ATTACHMENT_LABELS = {
-tarjeta:"tarjeta",
-poliza:"poliza",
-licencia:"licencia",
-facturas:"facturas",
-carne:"carne"
+tarjeta:"Tarjeta",
+poliza:"Poliza",
+licencia:"Licencia",
+facturas:"Facturas",
+carne:"Carne"
 };
 
 const formatList = (items) => {
@@ -160,12 +160,12 @@ facturas:""
 setPersonCount(nextFormType ? 1 : 0);
 setPeople(nextFormType ? [createPerson()] : []);
 
-setToolCount(hasSection(nextFormType,"tools") ? 1 : 0);
-setTools(hasSection(nextFormType,"tools") ? [createTool()] : []);
+setToolCount(0);
+setTools([]);
 
 /* ✅ RESET MATERIALES */
-setMaterialCount(hasSection(nextFormType,"materials") ? 1 : 0);
-setMaterials(hasSection(nextFormType,"materials") ? [createMaterial()] : []);
+setMaterialCount(0);
+setMaterials([]);
 
 /* ✅ RESET VEHICULOS */
 setVehicle(hasSection(nextFormType,"vehicle") ? [createVehicle()] : []);
@@ -236,7 +236,7 @@ setPeople(newPeople);
 
 const changeToolCount = (value) => {
 
-const n = Math.max(1, parseInt(value) || 1);
+const n = Math.max(0, parseInt(value) || 0);
 setToolCount(n);
 
 let newTools = [...tools];
@@ -263,7 +263,7 @@ setTools(newTools);
 
 const changeMaterialCount = (value) => {
 
-const n = Math.max(1, parseInt(value) || 1);
+const n = Math.max(0, parseInt(value) || 0);
 setMaterialCount(n);
 
 let newMaterials = [...materials];
@@ -368,29 +368,19 @@ alert(`Completa todos los datos del vehiculo ${invalidVehicleIndex + 1}.`);
 return false;
 }
 
-if(enableTools && (toolCount < 1 || tools.length < 1)){
-alert("Debes agregar al menos una herramienta.");
-return false;
-}
-
 const invalidToolIndex = tools.findIndex((tool) =>
 isBlank(tool.descripcion) ||
 isInvalidQuantity(tool.cantidad) ||
 isBlank(tool.factura)
 );
 
-if(enableTools && invalidToolIndex >= 0){
+if(enableTools && tools.length > 0 && invalidToolIndex >= 0){
 alert(`Completa Descripcion, Cantidad y No. Factura de la herramienta ${invalidToolIndex + 1}.`);
 return false;
 }
 
-if(enableTools && tools.some((tool) => isInvalidQuantity(tool.cantidad))){
+if(enableTools && tools.length > 0 && tools.some((tool) => isInvalidQuantity(tool.cantidad))){
 alert("La cantidad minima de cada herramienta debe ser 1.");
-return false;
-}
-
-if(enableMaterials && (materialCount < 1 || materials.length < 1)){
-alert("Debes agregar al menos un material.");
 return false;
 }
 
@@ -400,12 +390,12 @@ isInvalidQuantity(material.cantidad) ||
 isBlank(material.factura)
 );
 
-if(enableMaterials && invalidMaterialIndex >= 0){
+if(enableMaterials && materials.length > 0 && invalidMaterialIndex >= 0){
 alert(`Completa Descripcion, Cantidad y No. Factura del material ${invalidMaterialIndex + 1}.`);
 return false;
 }
 
-if(enableMaterials && materials.some((material) => isInvalidQuantity(material.cantidad))){
+if(enableMaterials && materials.length > 0 && materials.some((material) => isInvalidQuantity(material.cantidad))){
 alert("La cantidad minima de cada material debe ser 1.");
 return false;
 }

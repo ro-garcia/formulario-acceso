@@ -26,9 +26,9 @@ export default function MaterialsTable({
         onChange={(e) => changeMaterialCount(e.target.value)}
       >
 
-        {[...Array(25)].map((_, i) => (
-          <option key={i + 1} value={i + 1}>
-            {i + 1}
+        {[...Array(26)].map((_, i) => (
+          <option key={i} value={i}>
+            {i === 0 ? "Ninguno" : i}
           </option>
         ))}
 

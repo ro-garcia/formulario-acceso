@@ -12,3 +12,7 @@ export const VISIBLE_FORM_TYPES = [
   FORM_TYPES[1],
   FORM_TYPES[3]
 ];
+
+export const FORM_TYPE_LABELS = {
+  [FORM_TYPES[3]]: "Carta Para Ingreso Materiales y/o Herramientas"
+};

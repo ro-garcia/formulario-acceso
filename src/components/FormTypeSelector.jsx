@@ -1,4 +1,4 @@
-import { VISIBLE_FORM_TYPES } from "../constants";
+import { FORM_TYPE_LABELS, VISIBLE_FORM_TYPES } from "../constants";
 
 export default function FormTypeSelector({formType,setFormType}){
 
@@ -18,7 +18,7 @@ onChange={(e)=>setFormType(e.target.value)}
 <option value="">Seleccione</option>
 
 {VISIBLE_FORM_TYPES.map((t)=>(
-<option key={t}>{t}</option>
+<option key={t} value={t}>{FORM_TYPE_LABELS[t] || t}</option>
 ))}
 
 </select>

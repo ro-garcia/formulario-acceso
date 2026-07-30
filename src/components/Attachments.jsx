@@ -3,8 +3,15 @@ tarjeta:"Tarjeta",
 poliza:"Poliza",
 licencia:"Licencia",
 facturas:"Facturas",
-carne:"Carne"
+carne:"Carne (opcional)"
 };
+
+const requiredAttachmentKeys = [
+"tarjeta",
+"poliza",
+"licencia",
+"facturas"
+];
 
 export default function Attachments({attachments,setAttachments,enableAttachments,attachmentsResetKey,attachmentError}){
 
@@ -30,6 +37,7 @@ Si no contiene los documentos del vehículo que se solicitan adjuntar, gestionar
 
 {Object.keys(attachments).map((key)=>{
 const selectedFile = attachments[key];
+const isRequired = requiredAttachmentKeys.includes(key);
 
 return(
 
@@ -44,7 +52,7 @@ key={`${key}-${attachmentsResetKey}`}
 type="file"
 accept="image/*,.pdf,application/pdf"
 disabled={!enableAttachments}
-required={enableAttachments}
+required={enableAttachments && isRequired}
 onChange={(e)=>{
 const file = e.target.files?.[0] || false;
 

@@ -73,8 +73,15 @@ tarjeta:"Tarjeta",
 poliza:"Poliza",
 licencia:"Licencia",
 facturas:"Facturas",
-carne:"Carne"
+carne:"Carne (opcional)"
 };
+
+const REQUIRED_ATTACHMENT_KEYS = [
+"tarjeta",
+"poliza",
+"licencia",
+"facturas"
+];
 
 const formatList = (items) => {
 if(items.length <= 1) return items[0] || "";
@@ -83,9 +90,7 @@ return `${items.slice(0,-1).join(", ")} y ${items[items.length - 1]}`;
 };
 
 const getMissingAttachments = (attachments) =>
-Object.entries(attachments)
-.filter(([,file]) => !file)
-.map(([key]) => key);
+REQUIRED_ATTACHMENT_KEYS.filter((key) => !attachments[key]);
 
 const getMissingAttachmentMessage = (attachments) => {
 const missingAttachments = getMissingAttachments(attachments);
@@ -97,8 +102,8 @@ missingAttachments.map((key) => ATTACHMENT_LABELS[key] || key)
 );
 
 return missingAttachments.length === 1
-? `Te falta el adjunto: ${missingNames}. Debes cargar los 5 adjuntos para enviar el formulario.`
-: `Te faltan los adjuntos: ${missingNames}. Debes cargar los 5 adjuntos para enviar el formulario.`;
+? `Te falta el adjunto obligatorio: ${missingNames}. Debes cargar Tarjeta, Poliza, Licencia y Facturas para enviar el formulario.`
+: `Te faltan los adjuntos obligatorios: ${missingNames}. Debes cargar Tarjeta, Poliza, Licencia y Facturas para enviar el formulario.`;
 };
 
 export default function App() {
